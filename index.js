@@ -93,11 +93,26 @@ function showAllBooks(){
             <td>${ele.name}</td>
             <td>${ele.author}</td>
             <td>${ele.type}</td>
+            <td>
+                <button type="button" class="btn btn-danger">Delete Record</button>
+            </td>
         </tr>    
         `;
     });
     rows.innerHTML = row;
 }
+
+// function deletePerticularRecord(ele){
+//     let books = window.localStorage.getItem('books');
+//     if(books == null){
+//         lStorage = [];
+//     }
+//     else{
+//         lStorage = JSON.parse(books); 
+//     }
+//     lStorage.slice(ele.id, 1);
+//     window.localStorage.setItem('books', JSON.stringify(lStorage));
+// }
 
 function showMassage(msg, description){
     let massage = document.getElementById('massage');
