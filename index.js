@@ -85,34 +85,26 @@ function showAllBooks(){
 
     let rows = document.getElementById('tableBody');
     let row = '';
-    Array.from(lStorage).forEach(function(ele){
-        ele = JSON.parse(ele);
+    if(lStorage.length == 0){
         row = row + `
-        <tr>
-            <th scope="row">${ele.id}</th>
-            <td>${ele.name}</td>
-            <td>${ele.author}</td>
-            <td>${ele.type}</td>
-            <td>
-                <button type="button" class="btn btn-danger">Delete Record</button>
-            </td>
-        </tr>    
+            <tr>No records to display.</tr>        
         `;
-    });
+    }
+    else{
+        Array.from(lStorage).forEach(function(ele){
+            ele = JSON.parse(ele);
+            row = row + `
+            <tr>
+                <th scope="row">${ele.id}</th>
+                <td>${ele.name}</td>
+                <td>${ele.author}</td>
+                <td>${ele.type}</td>
+            </tr>    
+            `;
+        });            
+    }
     rows.innerHTML = row;
 }
-
-// function deletePerticularRecord(ele){
-//     let books = window.localStorage.getItem('books');
-//     if(books == null){
-//         lStorage = [];
-//     }
-//     else{
-//         lStorage = JSON.parse(books); 
-//     }
-//     lStorage.slice(ele.id, 1);
-//     window.localStorage.setItem('books', JSON.stringify(lStorage));
-// }
 
 function showMassage(msg, description){
     let massage = document.getElementById('massage');
@@ -125,4 +117,53 @@ function showMassage(msg, description){
     setTimeout(function(){
         massage.innerHTML = ''
     }, 2000);
+}
+
+let deleteRow = document.getElementById('deleteRow');
+deleteRow.addEventListener('keypress', function(e){
+    if(e.key === 'Enter'){
+        let books = window.localStorage.getItem('books');
+        if(books == null){
+            lStorage = [];
+            showMassage('danger', 'No book record to delete.');
+            return;
+        }
+        else{
+            lStorage = JSON.parse(books); 
+        }
+
+        if(isIdPresent(deleteRow.value)){
+            let temp = [];
+            Array.from(lStorage).forEach(function(element){
+                element = JSON.parse(element);
+                if(element.id != deleteRow.value){
+                    temp.push(JSON.stringify(element));                
+                }
+            });
+            window.localStorage.setItem('books', JSON.stringify(temp));
+            showMassage('success', 'Book deleted successfully.');
+            showAllBooks();
+        }
+        else{
+            showMassage('warning', 'Book Not Present.');
+        }
+    }
+});
+
+function isIdPresent(index){
+    let status = false;
+    let books = window.localStorage.getItem('books');
+    if(books == null){
+        lStorage = [];
+    }
+    else{
+        lStorage = JSON.parse(books); 
+    }
+    Array.from(lStorage).forEach(function(element){
+        element = JSON.parse(element);
+        if(element.id == index){
+            status = true;
+        }
+    });
+    return status;
 }
