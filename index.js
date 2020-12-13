@@ -1,7 +1,9 @@
 console.log('Welcome to library.');
+showAllBooks();
 
 class Book {
-    constructor(name, author, type){
+    constructor(id, name, author, type){
+        this.id = id;
         this.name = name;
         this.author = author;
         this.type = type;
@@ -28,11 +30,21 @@ addBook.addEventListener('click', function(e){
         type = cSharpProgramming.value;
     }
 
-    let book = new Book(name.value, author.value, type);
+    let books = window.localStorage.getItem('books');
+    if(books == null){
+        lStorage = [];
+    }
+    else{
+        lStorage = JSON.parse(books); 
+    }
+    let book = new Book(lStorage.length + 1, name.value, author.value, type);
 
     if(validateForm(book)){
         addBookToLibrary(book);
         showMassage('success', 'Your book is added to library.');
+
+        let libraryBooks = document.getElementById('libraryBooks');
+        libraryBooks.reset();
     }
     else{
         showMassage('danger', 'Invalid form! please try again.');
@@ -50,16 +62,41 @@ function validateForm(book){
 }
 
 function addBookToLibrary(book){
-    noOfBooks++;
+    let books = window.localStorage.getItem('books');
+    if(books == null){
+        lStorage = [];
+    }
+    else{
+        lStorage = JSON.parse(books); 
+    }
+    lStorage.push(JSON.stringify(book));
+    window.localStorage.setItem('books', JSON.stringify(lStorage));
+    showAllBooks();
+}
+
+function showAllBooks(){
+    let books = window.localStorage.getItem('books');
+    if(books == null){
+        lStorage = [];
+    }
+    else{
+        lStorage = JSON.parse(books); 
+    }
+
     let rows = document.getElementById('tableBody');
-    rows.innerHTML = rows.innerHTML + `
-    <tr>
-        <th scope="row">${noOfBooks}</th>
-        <td>${book.name}</td>
-        <td>${book.author}</td>
-        <td>${book.type}</td>
-    </tr>    
-    `;
+    let row = '';
+    Array.from(lStorage).forEach(function(ele){
+        ele = JSON.parse(ele);
+        row = row + `
+        <tr>
+            <th scope="row">${ele.id}</th>
+            <td>${ele.name}</td>
+            <td>${ele.author}</td>
+            <td>${ele.type}</td>
+        </tr>    
+        `;
+    });
+    rows.innerHTML = row;
 }
 
 function showMassage(msg, description){
@@ -70,4 +107,7 @@ function showMassage(msg, description){
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>    
     `;
+    setTimeout(function(){
+        massage.innerHTML = ''
+    }, 2000);
 }
